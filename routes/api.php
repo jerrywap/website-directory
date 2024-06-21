@@ -17,10 +17,6 @@ use App\Http\Controllers\CategoryController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
@@ -30,6 +26,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('websites/{id}/vote', [WebsiteController::class, 'vote']);
     Route::post('websites/{id}/unvote', [WebsiteController::class, 'unvote']);
     Route::resource('categories', CategoryController::class)->except(['create', 'edit']);
+
+    Route::middleware('admin')->group(function () {
+        Route::delete('websites/{id}', [WebsiteController::class, 'destroy']);
+    });
 });
 
 Route::get('websites', [WebsiteController::class, 'index']);
+Route::get('categories', [CategoryController::class, 'index']);

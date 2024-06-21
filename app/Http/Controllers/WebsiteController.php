@@ -10,9 +10,26 @@ use App\Models\Category;
 
 class WebsiteController extends Controller
 {
-    public function index()
+    /*public function index()
     {
         return Website::with('categories')->get();
+    }*/
+    public function index(Request $request)
+    {
+        $query = Website::query();
+
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('url', 'LIKE', "%{$search}%")
+                ->orWhereHas('categories', function($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                });
+        }
+
+        $websites = $query->with('categories', 'votes')->get();
+
+        return response()->json($websites);
     }
 
     public function store(Request $request)
@@ -32,8 +49,14 @@ class WebsiteController extends Controller
     public function vote($id)
     {
         $website = Website::findOrFail($id);
-        $vote = Vote::firstOrCreate([
-            'user_id' => auth()->id(),
+
+        $existingVote = Vote::where('user_id', Auth::id())->where('website_id', $id)->first();
+        if ($existingVote) {
+            return response()->json(['message' => 'You have already voted for this website'], 409);
+        }
+
+        Vote::create([
+            'user_id' => Auth::id(),
             'website_id' => $id,
         ]);
 
@@ -42,7 +65,7 @@ class WebsiteController extends Controller
 
     public function unvote($id)
     {
-        $vote = Vote::where('user_id', auth()->id())->where('website_id', $id)->first();
+        $vote = Vote::where('user_id', Auth::id())->where('website_id', $id)->first();
         if ($vote) {
             $vote->delete();
             return response()->json(['message' => 'Vote removed']);

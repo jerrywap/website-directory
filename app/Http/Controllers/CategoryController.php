@@ -10,7 +10,9 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        return Category::all();
+        $categories = Category::with('websites.votes')->get();
+        return response()->json($categories);
+//        return Category::all();
     }
 
     public function store(Request $request)

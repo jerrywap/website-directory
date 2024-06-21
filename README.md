@@ -145,6 +145,29 @@ This is a proof-of-concept Restful API for a web directory built using Laravel.
     }
     ```
 
+### Search
+
+- **Search websites:** `GET /api/websites?search={query}`
+    - Query parameter:
+        - `search`: Search term to filter websites by name, URL, or category.
+    - Example response:
+    ```json
+    [
+      {
+        "id": 1,
+        "name": "Example Website",
+        "url": "https://example.com",
+        "categories": [
+          {
+            "id": 1,
+            "name": "Technology"
+          }
+        ],
+        "votes_count": 5
+      }
+    ]
+    ```
+
 ## Running Tests
 
 To run tests, use the following command:

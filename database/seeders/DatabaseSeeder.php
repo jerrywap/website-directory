@@ -10,6 +10,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
+        $this->call(AdminUserSeeder::class);
         Category::factory(10)->create()->each(function ($category) {
             Website::factory(10)->create()->each(function ($website) use ($category) {
                 $website->categories()->attach($category->id);
