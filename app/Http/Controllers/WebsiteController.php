@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Website;
 use App\Models\Vote;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class WebsiteController extends Controller
 {
@@ -48,19 +50,24 @@ class WebsiteController extends Controller
 
     public function vote($id)
     {
-        $website = Website::findOrFail($id);
+        try {
+            $website = Website::findOrFail($id);
 
-        $existingVote = Vote::where('user_id', Auth::id())->where('website_id', $id)->first();
-        if ($existingVote) {
-            return response()->json(['message' => 'You have already voted for this website'], 409);
+            $existingVote = Vote::where('user_id', Auth::id())->where('website_id', $id)->first();
+            if ($existingVote) {
+                return response()->json(['message' => 'You have already voted for this website'], 409);
+            }
+
+            Vote::create([
+                'user_id' => Auth::id(),
+                'website_id' => $id,
+            ]);
+
+            return response()->json(['message' => 'Vote registered']);
+        } catch (\Exception $e) {
+            Log::error('Error voting for website: '.$e->getMessage());
+            return response()->json(['error' => 'Server Error'], 500);
         }
-
-        Vote::create([
-            'user_id' => Auth::id(),
-            'website_id' => $id,
-        ]);
-
-        return response()->json(['message' => 'Vote registered']);
     }
 
     public function unvote($id)

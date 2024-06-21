@@ -1,12 +1,12 @@
 # Web Directory API
 
-This is a proof-of-concept Restful API for a web directory built using Laravel.
+This is a proof-of-concept Restful API developed for Cavendish consulting.
 
 ## Installation
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/web-directory.git
+    git clone https://github.com/jerrywap/website-directory.git
     cd web-directory
     ```
 
@@ -15,7 +15,7 @@ This is a proof-of-concept Restful API for a web directory built using Laravel.
     composer install
     ```
 
-3. Copy the `.env.example` file to `.env`:
+3. Copy the `.env.example` file to `.env` then configure your database:
     ```bash
     cp .env.example .env
     ```
@@ -44,8 +44,8 @@ This is a proof-of-concept Restful API for a web directory built using Laravel.
 - **Register:** `POST /api/register`
     ```json
     {
-      "name": "John Doe",
-      "email": "johndoe@example.com",
+      "name": "Jerry Chukwudi",
+      "email": "jerrychukwudi@email.com",
       "password": "password",
       "password_confirmation": "password"
     }
@@ -54,7 +54,7 @@ This is a proof-of-concept Restful API for a web directory built using Laravel.
 - **Login:** `POST /api/login`
     ```json
     {
-      "email": "johndoe@example.com",
+      "email": "jerrychukwudi@email.com",
       "password": "password"
     }
     ```
@@ -65,7 +65,7 @@ This is a proof-of-concept Restful API for a web directory built using Laravel.
 
 - **Get all websites (with search and voting count):** `GET /api/websites`
     - Query parameters:
-        - `search`: Search term to filter websites by name, URL, or category.
+        - `search`: Search term to filter websites by name, URL, or category. `GET /api/websites?search=Yundt`
     - Example response:
     ```json
     [
