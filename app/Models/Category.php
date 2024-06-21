@@ -15,4 +15,9 @@ class Category extends Model
     {
         return $this->belongsToMany(Website::class, 'category_website');
     }
+
+    public function votes()
+    {
+        return $this->hasManyThrough(Vote::class, Website::class);
+    }
 }

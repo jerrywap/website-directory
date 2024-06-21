@@ -1,13 +1,12 @@
 # Web Directory API
 
-This is a proof-of-concept Restful API developed for Cavendish consulting.
-
+A Proof of concept Restful api for developed by Jerry Chukwudi for the purpose of proficiency test by Cavendish Consulting.
 ## Installation
 
 1. Clone the repository:
     ```bash
     git clone https://github.com/jerrywap/website-directory.git
-    cd web-directory
+    cd website-directory
     ```
 
 2. Install dependencies:
@@ -15,7 +14,7 @@ This is a proof-of-concept Restful API developed for Cavendish consulting.
     composer install
     ```
 
-3. Copy the `.env.example` file to `.env` then configure your database:
+3. Copy the `.env.example` file to `.env` and update database configuration:
     ```bash
     cp .env.example .env
     ```
@@ -31,6 +30,11 @@ This is a proof-of-concept Restful API developed for Cavendish consulting.
     ```bash
     php artisan migrate --seed
     ```
+   Note that a default Admin Priviledged user is created along the seed
+    ```text
+    Username: admin@example.com
+    password: password
+    ```
 
 7. Serve the application:
     ```bash
@@ -44,8 +48,8 @@ This is a proof-of-concept Restful API developed for Cavendish consulting.
 - **Register:** `POST /api/register`
     ```json
     {
-      "name": "Jerry Chukwudi",
-      "email": "jerrychukwudi@email.com",
+      "name": "John Doe",
+      "email": "johndoe@example.com",
       "password": "password",
       "password_confirmation": "password"
     }
@@ -54,7 +58,7 @@ This is a proof-of-concept Restful API developed for Cavendish consulting.
 - **Login:** `POST /api/login`
     ```json
     {
-      "email": "jerrychukwudi@email.com",
+      "email": "johndoe@example.com",
       "password": "password"
     }
     ```
@@ -65,7 +69,7 @@ This is a proof-of-concept Restful API developed for Cavendish consulting.
 
 - **Get all websites (with search and voting count):** `GET /api/websites`
     - Query parameters:
-        - `search`: Search term to filter websites by name, URL, or category. `GET /api/websites?search=Yundt`
+        - `search`: Search term to filter websites by name, URL, or category.
     - Example response:
     ```json
     [
@@ -119,13 +123,14 @@ This is a proof-of-concept Restful API developed for Cavendish consulting.
 
 ### Categories
 
-- **Get all categories (with websites):** `GET /api/categories`
+- **Get all categories (with websites ordered by votes):** `GET /api/categories`
     - Example response:
     ```json
     [
       {
         "id": 1,
         "name": "Technology",
+        "total_votes": 10,
         "websites": [
           {
             "id": 1,

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 use App\Models\Website;
@@ -12,24 +14,22 @@ use Illuminate\Support\Facades\Log;
 
 class WebsiteController extends Controller
 {
-    /*public function index()
-    {
-        return Website::with('categories')->get();
-    }*/
     public function index(Request $request)
     {
-        $query = Website::query();
+        $query = Website::withCount('votes')
+                        ->with('categories')
+                        ->orderBy('votes_count', 'desc');
 
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where('name', 'LIKE', "%{$search}%")
-                ->orWhere('url', 'LIKE', "%{$search}%")
-                ->orWhereHas('categories', function($q) use ($search) {
-                    $q->where('name', 'LIKE', "%{$search}%");
-                });
+                  ->orWhere('url', 'LIKE', "%{$search}%")
+                  ->orWhereHas('categories', function ($q) use ($search) {
+                      $q->where('name', 'LIKE', "%{$search}%");
+                  });
         }
 
-        $websites = $query->with('categories', 'votes')->get();
+        $websites = $query->get();
 
         return response()->json($websites);
     }
@@ -44,6 +44,8 @@ class WebsiteController extends Controller
 
         $website = Website::create($request->only('name', 'url'));
         $website->categories()->sync($request->categories);
+        $website->load('categories');
+
 
         return response()->json($website, 201);
     }
@@ -82,9 +84,20 @@ class WebsiteController extends Controller
 
     public function destroy($id)
     {
-        $website = Website::findOrFail($id);
-        $website->delete();
+        try {
+            $website = Website::findOrFail($id);
 
-        return response()->json(['message' => 'Website deleted']);
+            $this->authorize('delete', $website);
+
+            $website->delete();
+
+            return response()->json(['message' => 'Website deleted']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Resource not found'], 404);
+        } catch (AuthorizationException $e) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Server Error'], 500);
+        }
     }
 }
